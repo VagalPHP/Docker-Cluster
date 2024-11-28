@@ -1,23 +1,20 @@
-version: '3.8'
+version: "3.8"
+
 services:
-  # Aplicação
-  app: # Nome do meu container
-    image: node:20.11.1-alpine # Imagem do recurso a ser instalado no container
-    deploy: # Configurações de Deploy
-      replicas: 8 # 8 aplicações disponibilizadas dentro do cluster
-      placement:
-        constraints:
-          - node.role == worker # Define que as réplicas irão rodar apenas nos nodes workers
-    command: sh -c "npm install && npm run dev" # Comando que irá rodar dentro do container
-    ports:
-      - "3000:3000"
-  visualizer:
-    image: dockersamples/visualizer
+  site2:
+    image: nginx
     deploy:
+      replicas: 8
       placement:
-        constraints:
-          - node.role == manager
+        constraints: [node.role==worker]
     ports:
-      - "8888:88"
+      - "8000:80"
+  visualizer:
+    image: dockersamples/visualizer:stable
+    ports:
+      - "8888:8080"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [ node.role == manager ]
